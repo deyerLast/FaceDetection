@@ -2,11 +2,12 @@ clc
 clear all
 close all
 %%%%%%%%%%%%%%%% enhancement %%%%%%%%%%%%%%%%%%%%%%
-im_pro =imread('./testing/person01_01d.png');
+im_pro =imread('person01_01d.png');
 im_en=histeq(im_pro);
 %%%%%%%%%%%%%%%%%%%%% TRAINING %%%%%%%%%%%%%%%%%%%%
 imlist=dir('./enroll/*.png');
-im =imread(['./enroll/',imlist(1).name]);
+im = imread(['./enroll/',imlist(1).name]);
+
 [r,c]=size(im);
 num_im=length(imlist);
 num_p=num_im/2;
@@ -14,6 +15,7 @@ x=zeros(r*c,num_p);
 im_vector=zeros(r*c,num_im);
 Mec=zeros(r*c,1);
 index=zeros;index2=zeros;
+
 match=zeros(1,10);match2=zeros(1,10);
 cmc=zeros(1,10);
 cmc2=zeros(1,10);
@@ -84,6 +86,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%  RESULT  %%%%%%%%%%%%%%%%%%%%%%%%
 %%% right result by observation is 1 1 2 3 4 %%%%%
 rresult=[1 1 2 3 4];
+%fprintf(rresult)
 %%%%%%%%%%%%%%% CMC calculation %%%%%%%
     if index(i)==rresult(i)
         match(1)=match(1)+1;%%%%%%%first rank matching number
@@ -102,6 +105,7 @@ for i=1:10  %% if show CMC of the 1st to 10th rank matching number
 cmc(i)=sum(match(1:i))/num_imt;
 end
 figure,plot(cmc);title('CMC curve');
+
 
 
 
