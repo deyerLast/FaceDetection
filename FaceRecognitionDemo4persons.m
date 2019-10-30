@@ -7,8 +7,9 @@ im_en=histeq(im_pro);
 %%%%%%%%%%%%%%%%%%%%% TRAINING %%%%%%%%%%%%%%%%%%%%
 imlist=dir('images_4persons/enroll/*.png');
 im = imread(['images_4persons/enroll/',imlist(1).name]);
+imHist = histeq(im);
 
-[r,c]=size(im);
+[r,c]=size(imHist);
 num_im=length(imlist);%Num of images
 num_p=num_im/2;%Num of people
 
@@ -74,6 +75,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%  TESTING  %%%%%%%%%%%%%%%%%%%%%%%%
 imlist2=dir('images_4persons/testing/*.png');
 num_imt=length(imlist2);
+
+
 imt_vector=zeros(r*c,num_imt); %Should this be 0?
 
 %%%%%% convert all test images to vector %%%%%%
@@ -85,11 +88,12 @@ for i=1:num_imt
     %%%%% get B=y-me %%%%%%%
     b(:,i)=imt_vector(:,i)-Me;  %% bi=imt_vector(i)-Me;
     wtb=ef'*b(:,i);  %%wtb=P'*bi;
+    
     for ii=1:num_p   %% weight compare wtb and wta(i)
         eud(ii)=sqrt(sum((wtb-wta(:,ii)).^2));
     end
     [cdata index(i)]=min(eud);  %% find minimum eud's index
-%%
+
 %%%%%%%%%%%%%%%%%%%%%%%  RESULT  %%%%%%%%%%%%%%%%%%%%%%%%
 %%% right result by observation is 1 1 2 3 4 %%%%%
     rresult=[1 1 2 3 4];
@@ -108,8 +112,10 @@ end
 
 for i=1:10  %% if show CMC of the 1st to 10th rank matching number 
     cmc(i)=sum(match(1:i))/num_imt;
+    cmc2(i)=sum(match2(1:i))/num_imt;% This is zero because it thinks that it got 
 end
 figure,plot(cmc);
+figure,plot(cmc2);
 title('CMC curve');
 
 

@@ -3,6 +3,28 @@ clc
 clear all
 close all
 
+%chloe1 = imread('Dataset/enrolling/ID45_001.png');
+%chloe2 = imread('Dataset/enrolling/ID45_002.png');
+%chloe3 = imread('Dataset/enrolling/ID45_003.png');
+%chloe4 = imread('Dataset/enrolling/ID45_004.png');
+%chloe5 = imread('Dataset/enrolling/ID45_005.png');
+
+%chloe1 = rgb2gray(chloe1);
+%chloe1 = imresize(chloe1, [100 100]);
+%chloe2 = rgb2gray(chloe2);
+%chloe2 = imresize(chloe2, [100 100]);
+%chloe3 = rgb2gray(chloe3);
+%hloe3 = imresize(chloe3, [100 100]);
+%chloe4 = rgb2gray(chloe4);
+%chloe5 = rgb2gray(chloe5);
+%figure,imshow(chloe1)
+%figure,imshow(chloe2)
+%figure,imshow(chloe3)
+%figure,imshow(chloe4)
+%figure,imshow(chloe5)
+
+%chloe = imread('Dataset/enrolling/ID45_001.bmp');
+%figure,imshow(chloe)
 %NOTES
 %All images 100X100, so already normalized.
 %Only have to find the characteristics using eigenvectors. 
@@ -11,7 +33,7 @@ close all
 %No ID28_###.bmp .   SO... Only 43 people
 
 %% Enhancement
-im_pro =imread('Dataset/testing/ID01_010.bmp');
+im_pro =imread('Dataset/testing/ID01_010.bmp');%Could encapsulate imread section, it works
 im_en=histeq(im_pro); %GrayScale, no black. Brighten it up!
 %figure,montage({im_pro,im_en}) %Visual representation for me to see what's
                                 %going on.
@@ -31,10 +53,10 @@ Mec=zeros(r*c,1);%Average face, this is frakeinstein, fear the amazing personali
 index=zeros;
 index2=zeros;
 
-match=zeros(1,100);%What is this for?
-match2=zeros(1,100);
-cmc=zeros(1,100);
-cmc2=zeros(1,100);
+match=zeros(1,43);%What is this for?
+match2=zeros(1,43);
+cmc=zeros(1,10);
+cmc2=zeros(1,10);
 
 %% Convert to vectors
 %%%%%% convert all images to vector %%%%%%
@@ -44,13 +66,17 @@ for i=1:numOfImages
 end
 %% Get Xi and Me
 j=1;
-for i=1:2:(numOfImages-1)%Change the number 2 here to how many people/pictures
-    x(:,j)=(vectorOfPeps(:,i)+vectorOfPeps(:,i+1))./5;%Mean Picture
-    Mec(:,1)=Mec(:,1)+vectorOfPeps(:,i)+vectorOfPeps(:,i+1);%Mean Vector
+for i=1:5:(numOfImages-1)%Change the number 2 here to how many people/pictures
+    %minus 1 why?
+    x(:,j)=( vectorOfPeps(:,i)+vectorOfPeps(:,i+1)+vectorOfPeps(:,i+2)+...
+        vectorOfPeps(:,i+3)+vectorOfPeps(:,i+4) )./5;%Mean Picture
+    
+    Mec(:,1)=Mec(:,1)+vectorOfPeps(:,i)+vectorOfPeps(:,i+1)+...
+        vectorOfPeps(:,i+2)+vectorOfPeps(:,i+3)+vectorOfPeps(:,i+4);%Mean Vector
     j=j+1;
 end
 
-Me = Mec(:,1) ./ numOfImages;% The four different people
+Me = Mec(:,1) ./ numOfImages;% The different people
 
 %% Get big A
 
@@ -62,6 +88,14 @@ end
 ata = a'*a;  
 [V D] = eig(ata);%eig = eigenvectors   The diagonal of the matrix RowEchilonForm
     %V should have the same first column, but it doesn't. Why?
+
+    
+    
+    
+    
+    
+    
+    %I THINK THIS MIGHT BE WRONG FOR THIS NOW
 p2 = [];
 for i = 1 : size(V,2) 
     if( D(i,i)>1 )
@@ -152,22 +186,23 @@ imt_vector=zeros(r*c,numOfImages);
 %%
 %%%%%% convert all test images to vector %%%%%%
 for i=1:numOfImages
-    im =imread(['Dataset/testing/',imlist2(i).name]);
+    im =histeq(imread(['Dataset/testing/',imlist2(i).name]));
     imt_vector(:,i)=reshape(im',r*c,1);
+    
     %%%%% get B=y-me %%%%%%%
     b(:,i)=imt_vector(:,i)-Me;  %% bi=imt_vector(i)-Me;
     wtb=ef'*b(:,i);  %%wtb=P'*bi;
+    
     for ii=1:numOfPeople   %% weight compare wtb and wta(i)
         eud(ii)=sqrt(sum((wtb-wta(:,ii)).^5));%Changed from .^2
     end
-    [cdata index(i)]=min(eud);  %% find minimum eud's index
+    [cdata index(i)]=min(eud);  %% find minimum eud's index .         cdata Does What?
 
        %%%%%%%%%%%%%%%%%%%%%%%  RESULT  %%%%%%%%%%%%%%%%%%%%%%%%
     %%% right result by observation is 1 1 2 3 4 %%%%%
     rresult=[1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 4 4 4 4 4 5 5 5 5 5 6 6 6 6 6 7 7 7 7 7 8 8 8 8 8 9 9 9 9 9 10 10 10 10 10 11 11 11 11 11 12 12 12 12 12 13 13 13 13 13 14 14 14 14 14 15 15 15 15 15 16 16 16 16 16 17 17 17 17 17 18 18 18 18 18 19 19 19 19 19 20 20 20 20 20 21 21 21 21 21 22 22 22 22 22 23 23 23 23 23 24 24 24 24 24 25 25 25 25 25 26 26 26 26 26 27 27 27 27 27 29 29 29 29 29 30 30 30 30 30 31 31 31 31 31 32 32 32 32 32 33 33 33 33 33 34 34 34 34 34 35 35 35 35 35 36 36 36 36 36 37 37 37 37 37 38 38 38 38 38 39 39 39 39 39 40 40 40 40 40 41 41 41 41 41 42 42 42 42 42 43 43 43 43 43 44 44 44 44 44];
     %fprintf(rresult)
     %%%%%%%%%%%%%%% CMC calculation %%%%%%%
-    %%
     if index(i)==rresult(i)
         match(1)=match(1)+1;%%%%%%%first rank matching number
     else
