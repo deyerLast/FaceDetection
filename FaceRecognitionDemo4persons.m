@@ -83,7 +83,7 @@ imt_vector=zeros(r*c,num_imt); %Should this be 0?
 %question = ef';%So the "'" transposes the matrix.
 %%
 for i=1:num_imt
-    im =imread(['images_4persons/testing/',imlist2(i).name]);
+    im =(imread(['images_4persons/testing/',imlist2(i).name]));
     imt_vector(:,i)=reshape(im',r*c,1);
     %%%%% get B=y-me %%%%%%%
     b(:,i)=imt_vector(:,i)-Me;  %% bi=imt_vector(i)-Me;
@@ -103,7 +103,7 @@ for i=1:num_imt
         match(1)=match(1)+1;%%%%%%%first rank matching number
     else
         [svals,idx]=sort(eud(:));
-        index2(i)=idx(2);
+        index2(i)=histeq(idx(2));
         if index2(i)==rresult(i)
             match(2)=match(2)+1;%%%%%%%second rank matching number
         end 
@@ -112,21 +112,16 @@ end
 
 for i=1:10  %% if show CMC of the 1st to 10th rank matching number 
     cmc(i)=sum(match(1:i))/num_imt;
-    cmc2(i)=sum(match2(1:i))/num_imt;% This is zero because it thinks that it got 
+    %cmc2(i)=sum(match2(1:i))/num_imt;% This is zero because it thinks that it got 
 end
 figure,plot(cmc);
-figure,plot(cmc2);
 title('CMC curve');
+%figure,plot(cmc2);
+%title('CMC2 curve');
 
 
 
 
  i=i;
-
-
-
-
-
-
 
 
