@@ -25,7 +25,7 @@ cmc=zeros(1,10);
 cmc2=zeros(1,10);
 %%%%%% convert all images to vector %%%%%%
 for i=1:num_im
-    im =imread(['images_4persons/enroll/',imlist(i).name]);
+    im =histeq(imread(['images_4persons/enroll/',imlist(i).name]));%Histogram equalization here to get more accurate
     im_vector(:,i)=reshape(im',r*c,1);
 end
 
@@ -46,6 +46,7 @@ end
 
 %%%%%%%%%%%%%% to get eig of A'*A (P2) %%%%%%%%%
 ata = a'*a;  
+
 [V D] = eig(ata);
 p2 = [];
 for i = 1 : size(V,2) 
@@ -67,9 +68,10 @@ ef =a*p2;  %here is the P you need to use in matching
 for i=1:cc
     eigim_t=ef(:,i);
     eigface(:,:,i)=reshape(eigim_t,r,c);
-    figure,imagesc(eigface(:,:,i)');
-    axis image;axis off; colormap(gray(256));
-    title('Eigen Face Image','fontsize',10);
+    
+    %figure,imagesc(eigface(:,:,i)');
+    %axis image;axis off; colormap(gray(256));
+    %title('Eigen Face Image','fontsize',10);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%  TESTING  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,20 +79,21 @@ imlist2=dir('images_4persons/testing/*.png');
 num_imt=length(imlist2);
 
 
-imt_vector=zeros(r*c,num_imt); %Should this be 0?
+imt_vector=zeros(r*c,num_imt);
 
 %%%%%% convert all test images to vector %%%%%%
 %question = ef';%So the "'" transposes the matrix.
 %%
 for i=1:num_imt
-    im =(imread(['images_4persons/testing/',imlist2(i).name]));
-    imt_vector(:,i)=reshape(im',r*c,1);
+    im =(imread(['images_4persons/testing/',imlist2(i).name]));%histeq here get .8 accuracy
+    imt_vector(:,i)=(reshape(im',r*c,1));
     %%%%% get B=y-me %%%%%%%
     b(:,i)=imt_vector(:,i)-Me;  %% bi=imt_vector(i)-Me;
     wtb=ef'*b(:,i);  %%wtb=P'*bi;
     
     for ii=1:num_p   %% weight compare wtb and wta(i)
-        eud(ii)=sqrt(sum((wtb-wta(:,ii)).^2));
+        %wtb is already set to person i, where we have to get wta(:,i)
+        eud(ii)=sqrt(sum((wtb-wta(:,ii)).^2));%Compare the 2, hence the .^2
     end
     [cdata index(i)]=min(eud);  %% find minimum eud's index
 
@@ -99,13 +102,20 @@ for i=1:num_imt
     rresult=[1 1 2 3 4];
 %fprintf(rresult)
 %%%%%%%%%%%%%%% CMC calculation %%%%%%%
+
     if index(i)==rresult(i)
         match(1)=match(1)+1;%%%%%%%first rank matching number
+        %match
+        %i
     else
         [svals,idx]=sort(eud(:));
-        index2(i)=histeq(idx(2));
+        index2(i)=(idx(2));
         if index2(i)==rresult(i)
             match(2)=match(2)+1;%%%%%%%second rank matching number
+            
+            %This shows which one it's unsure about.
+            %match
+            %i
         end 
     end
 end
