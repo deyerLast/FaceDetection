@@ -175,7 +175,7 @@ for i=1:numOfImages
         eud(ii)=sqrt(sum((wtb-wta(:,ii)).^2));%Change this to .^5?Leave because only comparing the eigen and the testing
         
         %wtb is already set to person i, but we have to get wta(:,i)
-        figure,plot(eud)
+        %figure,plot(eud)
         
     end
     %%
@@ -218,7 +218,7 @@ for i=1:numOfImages
 end  
 %%
 for i=1:10   
-    cmc(i)=sum(match(1:i))/numOfImages;
+    cmc(i)=sum(match(1:i)) / numOfImages;
 end
 
 
