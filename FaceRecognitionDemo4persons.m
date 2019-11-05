@@ -57,10 +57,10 @@ end
 %%%weight of the training data projected into eigen space%%%%%
 wta=p2'*ata; % A*P2= P;  P'*A =Wt_A
 %This section is only for visual representation of the weights
-%figure,plot(wta(:,1));title('Weights representing Faces of Person1');
-%figure,plot(wta(:,2));title('Weights representing Faces of Person2');
-%figure,plot(wta(:,3));title('Weights representing Faces of Person3');
-%figure,plot(wta(:,4));title('Weights representing Faces of Person4');
+figure,plot(wta(:,1));title('Weights representing Faces of Person1');
+figure,plot(wta(:,2));title('Weights representing Faces of Person2');
+figure,plot(wta(:,3));title('Weights representing Faces of Person3');
+figure,plot(wta(:,4));title('Weights representing Faces of Person4');
 %%%%%%%%%%%%%% to get the Eigenfaces %%%%%%%%%%%%
 ef =a*p2;  %here is the P you need to use in matching 
 [rr,cc]=size(ef);
@@ -69,9 +69,9 @@ for i=1:cc
     eigim_t=ef(:,i);
     eigface(:,:,i)=reshape(eigim_t,r,c);
     
-    %figure,imagesc(eigface(:,:,i)');
-    %axis image;axis off; colormap(gray(256));
-    %title('Eigen Face Image','fontsize',10);
+    figure,imagesc(eigface(:,:,i)');
+    axis image;axis off; colormap(gray(256));
+    title('Eigen Face Image','fontsize',10);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%  TESTING  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,7 +85,7 @@ imt_vector=zeros(r*c,num_imt);
 %question = ef';%So the "'" transposes the matrix.
 %%
 for i=1:num_imt
-    im =(imread(['images_4persons/testing/',imlist2(i).name]));%histeq here get .8 accuracy
+    im =histeq(imread(['images_4persons/testing/',imlist2(i).name]));%histeq here get .8 accuracy
     imt_vector(:,i)=(reshape(im',r*c,1));
     %%%%% get B=y-me %%%%%%%
     b(:,i)=imt_vector(:,i)-Me;  %% bi=imt_vector(i)-Me;
@@ -105,6 +105,9 @@ for i=1:num_imt
 
     if index(i)==rresult(i)
         match(1)=match(1)+1;%%%%%%%first rank matching number
+        
+        %count = i;
+        %count
         %match
         %i
     else
